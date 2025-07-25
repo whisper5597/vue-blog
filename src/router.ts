@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import { supabase } from './lib/supabase'; // 从 supabase.ts 导入 supabase 实例
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
@@ -8,7 +8,7 @@ import PostDetail from './views/PostDetail.vue';
 import EditPost from './views/EditPost.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(), // 将 createWebHistory() 修改为 createWebHashHistory()
   routes: [
     { path: '/', component: Home },
     { path: '/login', component: Login },
