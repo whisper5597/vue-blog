@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-50 text-gray-800;
+}
+
+.dark body {
+  @apply bg-gray-900 text-gray-200;
+}
+
+/* 你可以在这里添加更多黑暗模式下的全局样式覆盖 */
