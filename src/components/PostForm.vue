@@ -136,7 +136,7 @@ const handleSubmit = async () => {
         })
         .eq('id', props.initialData.id);
       if (updateError) throw updateError;
-      router.push(`/post/${props.initialData.slug}`);
+      router.push(`/posts/${props.initialData.id}`);
     } else {
       // 创建逻辑
       const { error: insertError } = await supabase
