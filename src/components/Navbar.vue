@@ -38,9 +38,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { user, supabase } from '../lib/supabase';
-import { useRouter } from 'vue-router';
 
-const router = useRouter();
 const theme = ref('light');
 
 const applyTheme = (newTheme: string) => {
