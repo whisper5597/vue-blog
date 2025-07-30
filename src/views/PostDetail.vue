@@ -25,7 +25,7 @@ md.options.highlight = function (str, lang) {
         '<div class="code-block-wrapper relative group">' +
         '<div class="code-block-header flex justify-between items-center px-4 py-2 bg-[#3c3c3c] text-gray-300 rounded-t-md">' +
         `<span class="font-mono text-sm">${langName}</span>` +
-        '<button class="copy-code-btn bg-gray-700 hover:bg-gray-600 text-xs font-medium text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">复制</button>' +
+        '<button class="copy-code-btn bg-gray-700 hover:bg-gray-600 text-xs font-medium text-white px-2 py-1 rounded opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">复制</button>' +
         '</div>' +
         `<pre class="hljs !bg-[#252526] !text-white rounded-b-md p-4 overflow-x-auto m-0"><code>${highlightedCode}</code></pre>` +
         '</div>'
@@ -58,10 +58,13 @@ onMounted(async () => {
     isLoading.value = true;
     const postId = route.params.id as string;
 
-    // 获取文章数据
+    // 获取文章数据，并关联作者信息
     const { data: postData, error: postError } = await supabase
       .from('posts')
-      .select('*')
+      .select(`
+        *,
+        author:profiles ( username, avatar_url )
+      `)
       .eq('id', postId)
       .single();
 
@@ -153,7 +156,8 @@ const handleDelete = async () => {
       </div>
 
       <h1 class="text-3xl font-bold mb-2">{{ post.title }}</h1>
-      <p class="text-gray-500 text-sm mb-6 dark:text-gray-400">{{ new Date(post.created_at).toLocaleString() }}</p>
+      <p v-if="post.author" class="text-gray-500 text-sm mb-2 dark:text-gray-400">作者：{{ post.author.username }}</p>
+      <p class="text-gray-500 text-sm mb-6 dark:text-gray-400">更新于：{{ new Date(post.updated_at).toLocaleString() }}</p>
       <div class="prose max-w-none dark:prose-invert" v-html="renderedContent" @click="handleContentClick"></div>
     </div>
 

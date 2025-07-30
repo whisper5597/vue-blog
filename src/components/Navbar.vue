@@ -1,11 +1,9 @@
 <template>
   <nav class="bg-white shadow-md dark:bg-gray-800">
     <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-      <router-link to="/" class="text-xl font-bold text-primary dark:text-white">我的博客</router-link>
+      <router-link to="/" class="text-xl font-bold text-primary dark:text-white">首页</router-link>
       <div class="flex items-center space-x-4">
-        <div class="hidden md:flex items-center space-x-4">
-          <router-link to="/"
-            class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-white">首页</router-link>
+        <div class="flex items-center space-x-4">
           <template v-if="user">
             <router-link to="/create"
               class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-white">写点什么</router-link>
@@ -72,6 +70,6 @@ onMounted(() => {
 
 const handleLogout = async () => {
   await supabase.auth.signOut();
-  router.push('/');
+  window.location.reload();
 };
 </script>

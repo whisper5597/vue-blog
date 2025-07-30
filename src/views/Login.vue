@@ -45,7 +45,15 @@ const handleLogin = async () => {
     });
 
     if (authError) throw authError;
-    router.push('/');
+    // 检查上一页的路由
+    const previousRoute = router.options.history.state.back;
+    // 如果上一页是注册页，或者没有上一页，则跳转到首页
+    if (!previousRoute || typeof previousRoute === 'string' && previousRoute.startsWith('/register')) {
+      router.push('/');
+    } else {
+      // 否则，返回到上一页
+      router.back();
+    }
   } catch (err) {
     if (err instanceof Error) {
       error.value = err.message;
