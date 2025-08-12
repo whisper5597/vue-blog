@@ -23,6 +23,9 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 const router = useRouter();
 
+// 判断是否支持 Summarizer
+const isSummarizerSupported = ref(false);
+
 // 监听 initialData 的变化，并更新表单字段
 watch(() => props.initialData, (newData) => {
   if (newData) {
@@ -117,6 +120,49 @@ onMounted(() => {
   }
 });
 
+// 检测用户当前环境是否支持 Chrome 最新的 Summarizer API
+onMounted(() => {
+  if ('Summarizer' in self) {
+    console.log('当前设备支持 Chrome 最新的 Summarizer API');
+    isSummarizerSupported.value = true;
+  }
+});
+
+// 点击生成简介按钮
+const handleGenerateSummary = async () => {
+  if (!content.value) {
+    error.value = '请先输入文章内容';
+    return;
+  }
+
+  try {
+    const availability = await window.Summarizer.availability();
+    if (availability === 'unavailable') {
+      console.log('当前设备不支持 Chrome 最新的 Summarizer API');
+      return;
+    }
+    const options = {
+      sharedContext: title.value,
+      type: 'tldr',
+      format: 'plain-text',
+      length: 'short'
+    } as const;
+    if (navigator.userActivation.isActive) {
+      const summarizer = await window.Summarizer.create(options);
+      const summary = await summarizer.summarizeStreaming(content.value, {
+        context: `使用**中文**总结该文章，输出形式大致如下：本文主要讲述了XXXX | 简单谈下XXXX | 说下对XXXX的理解 | 记录一下关于XXXX`
+      });
+      description.value = '';
+      for await (const chunk of summary) {
+        description.value += chunk;
+      }
+    }
+
+  } catch (err) {
+    console.error('简介生成失败:', err);
+  }
+};
+
 const handleSubmit = async () => {
   isLoading.value = true;
   error.value = '';
@@ -177,6 +223,11 @@ const handleSubmit = async () => {
       <textarea v-model="description"
         class="w-full p-2 border rounded min-h-[100px] bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
         placeholder="输入文章简介，将显示在首页"></textarea>
+      <div v-if="isSummarizerSupported" class="mt-2 flex items-center">
+        <button type="button" @click="handleGenerateSummary"
+          class="text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600">生成简介</button>
+        <p class="ml-4 text-xs text-gray-500 dark:text-gray-400">根据下方内容，调用 Chrome 内置 API 自动生成简介，初次使用将会下载模型</p>
+      </div>
     </div>
 
     <div class="mb-4">
